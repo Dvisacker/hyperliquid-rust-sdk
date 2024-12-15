@@ -1,19 +1,28 @@
-use ethers::{
-    contract::{Eip712, EthAbiType},
-    types::H256,
-};
+use alloy_primitives::{Address, B256}; // Instead of H256
+use alloy_sol_types::{eip712_domain, sol, Eip712Domain}; // For EIP-712 support
 
 pub(crate) mod l1 {
+    use std::str::FromStr;
+
+    use alloy_primitives::Address;
+    use serde::Serialize;
+
     use super::*;
-    #[derive(Debug, Eip712, Clone, EthAbiType)]
-    #[eip712(
-        name = "Exchange",
-        version = "1",
-        chain_id = 1337,
-        verifying_contract = "0x0000000000000000000000000000000000000000"
-    )]
-    pub(crate) struct Agent {
-        pub(crate) source: String,
-        pub(crate) connection_id: H256,
+
+    sol! {
+        #[derive(Debug, Serialize)]
+        struct Agent {
+            string source;
+            bytes32 connection_id;
+        }
+    }
+
+    pub(crate) fn domain() -> Eip712Domain {
+        eip712_domain! {
+            name: "Exchange",
+            version: "1",
+            chain_id: 1337,
+            verifying_contract: Address::from_str("0x0000000000000000000000000000000000000000").unwrap(),
+        }
     }
 }

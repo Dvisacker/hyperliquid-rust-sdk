@@ -1,4 +1,4 @@
-use ethers::types::H160;
+use alloy_primitives::Address;
 use hyperliquid_rust_sdk::{BaseUrl, InfoClient};
 use log::info;
 
@@ -27,7 +27,7 @@ async fn main() {
     query_referral_state_example(&info_client).await;
 }
 
-fn address() -> H160 {
+fn address() -> Address {
     ADDRESS.to_string().parse().unwrap()
 }
 

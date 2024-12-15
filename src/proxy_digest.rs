@@ -1,18 +1,14 @@
 // For synchronous signing.
 // Needed to duplicate our own copy because it wasn't possible to import from ethers-signers.
-use ethers::prelude::k256::{
+use alloy_primitives::B256;
+use k256::ecdsa::signature::digest::{FixedOutput, FixedOutputReset, HashMarker, Reset, Update};
+use k256::{
     elliptic_curve::generic_array::GenericArray,
     sha2::{
         self,
         digest::{Output, OutputSizeUser},
         Digest,
     },
-};
-use ethers::{
-    core::k256::ecdsa::signature::digest::{
-        FixedOutput, FixedOutputReset, HashMarker, Reset, Update,
-    },
-    types::H256,
 };
 
 pub(crate) type Sha256Proxy = ProxyDigest<sha2::Sha256>;
@@ -23,12 +19,12 @@ pub(crate) enum ProxyDigest<D: Digest> {
     Digest(D),
 }
 
-impl<D: Digest + Clone> From<H256> for ProxyDigest<D>
+impl<D: Digest + Clone> From<B256> for ProxyDigest<D>
 where
     GenericArray<u8, <D as OutputSizeUser>::OutputSize>: Copy,
 {
-    fn from(src: H256) -> Self {
-        ProxyDigest::Proxy(*GenericArray::from_slice(src.as_bytes()))
+    fn from(src: B256) -> Self {
+        ProxyDigest::Proxy(*GenericArray::from_slice(src.as_slice()))
     }
 }
 
